@@ -6,7 +6,7 @@ cookbook = {}
 class recipe:
     def __init__(self, inway, outway, stoich, time, name):
         self.inway = inway
-        self.output = outway
+        self.outway = outway
         self.stoich = stoich
         self.time = time
         self.name = name
@@ -16,8 +16,8 @@ inway = ['copper']
 outway = ['copper_cable']
 stoich = {'copper':1, 'copper_cable':2}
 
-copper_wire = recipe(inway, outway, stoich, 0.5, 'copper_wire')
-cookbook.update({'copper_wire':copper_wire})
+copper_cable = recipe(inway, outway, stoich, 0.5, 'copper_cable')
+cookbook.update({'copper_cable':copper_cable})
 
 inway = ['copper_cable', 'iron_plate']
 outway = ['electronic_circuit']
@@ -30,19 +30,27 @@ cookbook.update({'electronic_circuit':electronic_circuit})
 
 # Begin main program logic
 
-bottleneck = ('electronic_circuit', 1)
+bottleneck = cookbook.get('electronic_circuit')
 
-x = cookbook.get(bottleneck[0])
-print(x.inway)
-# for i in x.inway:
-#     print(i)
-#     if i in cookbook.keys():
-#         print(f'{i}in cookbook')
-#     else:
-#         print(f'{i} not in cookbook')
+x = cookbook.get(bottleneck.name)
+cookbook_names = list(cookbook.keys())
+print(cookbook_names)
+# print(x.inway)
 
-# if bottleneck[0] in cookbook:
-#     print(cookbook('electronic_circuit').get(inway))
-# else:
-#     print('False')
 
+# Goal: output '1.5 machinges outputting "copper_cable" needed'
+intermediate = []
+
+for i in cookbook.get(bottleneck.name).inway:
+    print(i)
+    if i in cookbook_names:
+        print(f'{i} is an intermediate')
+        push = 
+        intermediate.append(i)
+
+    else:
+        print(f'{i} is not an intermediate')
+
+for i in intermediate:
+    x = cookbook.get(i).stoich[i]
+    print(x)
