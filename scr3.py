@@ -1,6 +1,10 @@
 # Let's make a calculator!
 # Create recipes to populate the cookbook
 
+# TODO
+# Implement time
+# Implement multi-ingredient layering
+
 cookbook = {}
 
 class recipe:
@@ -33,6 +37,28 @@ stoich = {'electronic_circuit': 1, 'iron_plate': 5, 'rail_signal':1}
 rail_signal = recipe(inway, outway, stoich, 0.5, 'rail_signal')
 cookbook.update({'rail_signal':rail_signal})
 
+inway = ['iron_plate']
+outway = ['iron_gear_wheel']
+stoich = {'iron_plate':2, 'iron_gear_wheel':1}
+
+iron_gear_wheel = recipe(inway, outway, stoich, 0.5, 'iron_gear_wheel')
+cookbook.update({'iron_gear_wheel':iron_gear_wheel})
+
+inway = ['iron_gear_wheel', 'iron_plate']
+outway = ['transport_belt']
+stoich = {'iron_gear_wheel':1, 'iron_plate':1, 'transport_belt':2}
+
+transport_belt = recipe(inway,outway,stoich,0.5,'transport_belt')
+cookbook.update({'transport_belt':transport_belt})
+
+inway = ['electronic_circuit', 'iron_gear_wheel', 'iron_plate']
+outway = ['inserter']
+stoich = {'electronic_circuit':1, 'iron_gear_wheel':1, 'iron_plate':1, 'inserter':1}
+
+inserter = recipe(inway,outway,stoich,0.5,'transport_belt')
+cookbook.update({'inserter':inserter})
+
+
 # End cookbook
 
 # Begin main program logic
@@ -45,7 +71,7 @@ def get_stoich(name, material):
     '''
     inward = cookbook.get(name).stoich[material]
     outward = cookbook.get(material).stoich[material]
-    print(f'{inward/outward} machines producing {material} per batch of {name}')
+    print(f'{inward/outward} machines producing {material} per this size batch of {name}')
 
 def get_intermediates(name):
     '''
@@ -55,15 +81,27 @@ def get_intermediates(name):
     for i in cookbook[name].inway:
         if i in cookbook_names:
             new_list.append((name,i))
-    return new_list
+    if new_list == []:
+        return None
+    else:
+        return new_list
 
-bottle = 'electronic_circuit'
+bottle = 'inserter'
 cookbook_names = list(cookbook.keys())
 
 layer = 1
-next_batch = []
-this_batch =get_intermediates(bottle)
-print(this_batch)
+this_batch = [get_intermediates(bottle)]
 
-for i in this_batch:
-    get_stoich(i[0],i[1])
+while this_batch != []:
+    print(f'Begin layer {layer} ####')
+    # print(this_batch)
+    n=1
+    for i in this_batch:
+        if n == 1: this_batch = []
+        # print(f'Layer {layer}, {i}')
+        get_stoich(i[0][0],i[0][1])
+        if get_intermediates(i[0][1]) != None:
+            this_batch.append(get_intermediates(i[0][1]))
+        n+=1
+    layer += 1
+    # print(f'next_batch = {this_batch}')
