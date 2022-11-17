@@ -65,11 +65,12 @@ class Node():
         self.mach       = None          # Inherited number of this machine for children to support
         self.name       = recipe.name
         self.time       = recipe.time
-        self.layer      = 0
-        if self.parent != None:
-            self.layer = self.parent.layer +1
 
 cookbook_names = list(cookbook.keys())
+
+objs = []
+
+
 
 ############
 ### INIT ###
@@ -77,38 +78,58 @@ cookbook_names = list(cookbook.keys())
 
 bottle = ('logistic_science_pack', 10)
 
-objs = []
 objs.append(Node(cookbook[bottle[0]], None))
 objs[0].mach = bottle[1]
 root = objs[0]
 current = objs[0]
 
-# Single loop that will generate the whole tree, parent/child relationships and machine ratio
+x = current.recipe.inway
+# print(x)
+for i in current.recipe.inway:
+    if i in cookbook_names:
+        objs.append(Node(cookbook[i], current))
+        mach_time = cookbook[i].time/current.recipe.time*current.recipe.stoich[i]/cookbook[i].stoich[i]*current.mach
+        objs[-1].mach = mach_time
+
+def child_exists(parent, child):
+    '''
+    Returns True if the parent has a child with child's name. False otherwise.
+    '''
+    for i in parent.child:
+        if i.name == child:
+            return True
+    return False
+
+
 done = False
-next = [root]
 while done == False:
-    n = 0
     done = True
-    for i in next:
-        if n == 0:
-            next = []
+    for i in objs:
         for g in i.recipe.inway:
             if g in cookbook_names:
-                objs.append(Node(cookbook[g], i))
-                next.append(objs[-1])
-                # Set machine count 'mach'
-                node = objs[-1]
-                if node.mach == None:
-                    tim = node.recipe.time / node.parent.recipe.time
-                    stoi = node.parent.recipe.stoich[node.recipe.name] / node.recipe.stoich[node.recipe.name]
-                    node.mach = tim*stoi*node.parent.mach
-                    
-                done = False
-            n += 1
+                if child_exists(i, g) == False:
+                    objs.append(Node(cookbook[g], i))
+                    i.child.append(objs[-1])
+                    # i.child.append(cookbook[g])
+                    done = False
+        
+        # Create object for child
+        # for g in i.child:
+
+
+
+
+
+# Calculate mach
+for i in objs:
+    if i.mach == None:
+        tim = i.recipe.time/i.parent.recipe.time
+        stoi = i.parent.recipe.stoich[i.recipe.name]/i.recipe.stoich[i.recipe.name]
+        i.mach = tim*stoi*i.parent.mach
+        # i.mach = i.recipe.time/i.parent.recipe.time*i.parent.stoich[i.recipe.name]/i.recipe.stoich[i.recipe.name]*i.parent.mach
 
 for i in objs:
-    if i == root:
-        print(f'{i.mach} machines making {i.name}')
-        continue
-    print(f'{i.mach:.1f} machines generating {i.name}{(20-len(i.name))*" "} for {i.parent.name}')
+    print(f'{i.name}: {i.mach:.1f}')
+
+
 

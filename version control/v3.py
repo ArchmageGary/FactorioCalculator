@@ -108,7 +108,7 @@ while done == False:
 
 for i in objs:
     if i == root:
-        print(f'{i.mach} machines making {i.name}')
+        print(f'{i.mach} machines making {i.name}: root')
         continue
-    print(f'{i.mach:.1f} machines generating {i.name}{(20-len(i.name))*" "} for {i.parent.name}')
+    print(f'{i.mach:.1f} machines generating {i.name}{(20-len(i.name))*" "} for {i.parent.name}{" "*(25-len(i.parent.name))}: layer {i.layer}')
 

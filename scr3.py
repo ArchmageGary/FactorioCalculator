@@ -125,7 +125,7 @@ def add_block(list):
     global l1
     l1>>list
 
-with Diagram("Factory", show=True,outformat='jpg'):
+with Diagram("Factory", show=True,outformat='jpg', direction = 'TB'):
     # Bottle needs a string recipe title and machine count
     bottle = ('logistic_science_pack', 10)
     cookbook_names = list(cookbook.keys())
@@ -148,7 +148,7 @@ with Diagram("Factory", show=True,outformat='jpg'):
         for i in this_batch:
             if n == 1: this_batch, this_block = [], []
             this_batch += main_func(i[0],i[1],i[2])
-            l1>>current_block
+            l1<<current_block
             n+=1
         
 
