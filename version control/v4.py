@@ -124,39 +124,50 @@ for i in objs:
 print(edgelist)
 
 # namelist is a list of names, associated with id.
-namelist = []
+namelist  = []
 colorlist = []
-anglelist = []
 orderlist = []
+layerlist = []
 for i in objs:
     namelist.append(i.name + ': ' + str(f'{i.mach:.1f}'))
     colorlist.append(i.color)
     orderlist.append(i.layer)
-    # anglelist.append(1)
-# print(namelist)
+    layerlist.append('l' + str(i.layer))
+
 
 g = Graph(edgelist, directed=True)
-g.vs['label'] = namelist
-g.vs['color'] = colorlist
-g.vs['order'] = orderlist
-
-g.degree(mode="out")
-
-# g.vs['label_angle'] = anglelist
-
-# plot(g, 'MustGrow.png')
-
-# layout = g.layout('kk')
-# plot(g, 'MustGrow.png', layout=layout)
+# Add ids and labels to vertices
+for i in range(len(g.vs)):
+    g.vs[i]["id"]= i
+    g.vs[i]["label"]= namelist[i]
+    g.vs[i]['weight'] = None
+g.add_edges(edgelist)
 
 
-# import matplotlib.pyplot as plt
-# fig, ax = plt.subplots()
-# plot(g, layout=layout, target=ax)
+# Begin defining graph characteristics
+visual_style = {}
+out_name = "graph.png"
+visual_style['label'] = namelist
+visual_style['color'] = colorlist
 
-# g.vs["label"] = g.vs["name"]
-# g.vs['label'] = namelist
-# color_dict = {"m": "blue", "f": "pink"}
-# g.vs["color"] = [color_dict[gender] for gender in g.vs["gender"]]
-plot(g, 'MustGrow.png', bbox=(300, 300), margin=30)
-# plot(g, layout=layout, bbox=(300, 300), margin=20, target=ax) # matplotlib version
+# Set bbox and margin
+# Future development: Auto-scale margin to be half the widest label
+# Auto-scale size to fit number of nodes? Or levels? Both?
+# Could count the width of widest layer and use that for w
+visual_style["bbox"] = (1920,1080)
+visual_style["margin"] = 140
+
+# Set vertex colours
+visual_style["vertex_color"] = 'white'
+visual_style["vertex_size"] = 45
+visual_style["vertex_label_size"] = 22
+
+# Don't curve the edges
+visual_style["edge_curved"] = False
+
+# Set the layout
+my_layout = g.layout_sugiyama()
+visual_style["layout"] = my_layout
+
+# Plot the graph
+plot(g, out_name, **visual_style)
