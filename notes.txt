@@ -1,0 +1,5 @@
+Potential modules to generate graphs:
+
+igraph
+https://towardsdatascience.com/newbies-guide-to-python-igraph-4e51689c35b4
+

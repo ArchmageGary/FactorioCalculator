@@ -126,14 +126,13 @@ print(edgelist)
 # namelist is a list of names, associated with id.
 namelist = []
 colorlist = []
+anglelist = []
 orderlist = []
-layerlist = []
 for i in objs:
     namelist.append(i.name + ': ' + str(f'{i.mach:.1f}'))
     colorlist.append(i.color)
     orderlist.append(i.layer)
-    layerlist.append('l' + str(i.layer))
-    
+    # anglelist.append(1)
 # print(namelist)
 
 g = Graph(edgelist, directed=True)
@@ -141,11 +140,7 @@ g.vs['label'] = namelist
 g.vs['color'] = colorlist
 g.vs['order'] = orderlist
 
-g.es['label'] = layerlist
-
 g.degree(mode="out")
-
-my_layout = g.layout_sugiyama()
 
 # g.vs['label_angle'] = anglelist
 

@@ -1,4 +1,5 @@
 from pprint import pprint
+from igraph import *
 
 # Let's make a calculator!
 # Create recipes to populate the cookbook
@@ -67,7 +68,9 @@ class Node():
         self.time       = recipe.time
         self.layer      = 0
         if self.parent != None:
-            self.layer = self.parent.layer +1
+            self.layer  = self.parent.layer +1
+        self.id         = len(objs)
+        self.color      = 'green'
 
 cookbook_names = list(cookbook.keys())
 
@@ -81,7 +84,10 @@ objs = []
 objs.append(Node(cookbook[bottle[0]], None))
 objs[0].mach = bottle[1]
 root = objs[0]
+root.color = 'red'
 current = objs[0]
+edgelist = []
+namelist = []
 
 # Single loop that will generate the whole tree, parent/child relationships and machine ratio
 done = False
@@ -102,6 +108,8 @@ while done == False:
                     tim = node.recipe.time / node.parent.recipe.time
                     stoi = node.parent.recipe.stoich[node.recipe.name] / node.recipe.stoich[node.recipe.name]
                     node.mach = tim*stoi*node.parent.mach
+                edgelist.append((objs[-1].parent.id, objs[-1].id))
+                # namelist.append((objs[-1].parent.id, objs[-1].id))
                     
                 done = False
             n += 1
@@ -110,5 +118,76 @@ for i in objs:
     if i == root:
         print(f'{i.mach} machines making {i.name}: root')
         continue
-    print(f'{i.mach:.1f} machines generating {i.name}{(20-len(i.name))*" "} for {i.parent.name}{" "*(25-len(i.parent.name))}: layer {i.layer}')
+    print(f'{i.mach:.1f} machines generating {i.name}{(20-len(i.name))*" "}| for {i.parent.name}{" "*(25-len(i.parent.name))} | layer {i.layer} | ID:{i.id}')
 
+# edgelist is a list of tuples linking the tree together
+print(edgelist)
+
+# namelist is a list of names, associated with id.
+namelist = []
+colorlist = []
+orderlist = []
+layerlist = []
+for i in objs:
+    namelist.append(i.name + ': ' + str(f'{i.mach:.1f}'))
+    colorlist.append(i.color)
+    orderlist.append(i.layer)
+    layerlist.append('l' + str(i.layer))
+    
+# print(namelist)
+
+# g = Graph(edgelist, directed=True)
+# g.vs['label'] = namelist
+# g.vs['color'] = colorlist
+# g.vs['order'] = orderlist
+
+# g.es['label'] = layerlist
+
+# g.degree(mode="out")
+
+# my_layout = g.layout_sugiyama()
+
+# from igraph import *
+
+# # Create a directed graph
+# g = Graph(directed=True)
+# # Add 5 vertices
+# g.add_vertices(5)
+
+
+g = Graph(edgelist, directed=True)
+# Add ids and labels to vertices
+for i in range(len(g.vs)):
+    g.vs[i]["id"]= i
+    g.vs[i]["label"]= namelist[i]
+    # g.vs[i]["label"]= str(i)
+    g.vs[i]['weight'] = None
+# Add edges
+g.add_edges(edgelist)
+# Add weights and edge labels
+# weights = [8,6,3,5,6,4,9]
+# g.es['weight'] = weights
+# g.es['label'] = weights
+
+
+visual_style = {}
+out_name = "graph.png"
+visual_style['weight'] = namelist
+visual_style['label'] = namelist
+visual_style['color'] = colorlist
+# Set bbox and margin
+visual_style["bbox"] = (1920,1080)
+visual_style["margin"] = 140
+# Set vertex colours
+visual_style["vertex_color"] = 'white'
+# Set vertex size
+visual_style["vertex_size"] = 45
+# Set vertex lable size
+visual_style["vertex_label_size"] = 22
+# Don't curve the edges
+visual_style["edge_curved"] = False
+# Set the layout
+my_layout = g.layout_sugiyama()
+visual_style["layout"] = my_layout
+# Plot the graph
+plot(g, out_name, **visual_style)
