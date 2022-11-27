@@ -1,62 +1,15 @@
+# Make a version that takes a completed cookbook from vanilla.py
+
 from pprint import pprint
 from igraph import *
+# from books/vanilla.py import cookbook
+from vanillaRecipes import cookbook
 
 # Let's make a calculator!
 # Create recipes to populate the cookbook
 
 # TODO
 # Implement time
-
-cookbook = {}
-
-class recipe:
-    def __init__(self, inway, outway, stoich, time):
-        self.inway  = inway
-        self.outway = outway
-        self.stoich = stoich
-        self.time   = time
-        self.name   = self.outway[0]
-
-def cooking(inway, outway, stoich, time):
-    cookbook.update({outway[0]:recipe(inway,outway,stoich,time)})
-
-
-inway = ['copper']
-outway = ['copper_cable']
-stoich = {'copper':1, 'copper_cable':2}
-cooking(inway,outway,stoich,0.5)
-
-inway = ['copper_cable', 'iron_plate']
-outway = ['electronic_circuit']
-stoich = {'copper_cable':3, 'iron_plate':1, 'electronic_circuit':1}
-cooking(inway,outway,stoich,0.5)
-
-inway = ['electronic_circuit', 'iron_plate']
-outway = ['rail_signal']
-stoich = {'electronic_circuit': 1, 'iron_plate': 5, 'rail_signal':1}
-cooking(inway,outway,stoich,0.5)
-
-inway = ['iron_plate']
-outway = ['iron_gear_wheel']
-stoich = {'iron_plate':2, 'iron_gear_wheel':1}
-cooking(inway,outway,stoich,0.5)
-
-inway = ['iron_gear_wheel', 'iron_plate']
-outway = ['transport_belt']
-stoich = {'iron_gear_wheel':1, 'iron_plate':1, 'transport_belt':2}
-cooking(inway,outway,stoich,0.5)
-
-inway = ['electronic_circuit', 'iron_gear_wheel', 'iron_plate']
-outway = ['inserter']
-stoich = {'electronic_circuit':5, 'iron_gear_wheel':1, 'iron_plate':1, 'inserter':1}
-cooking(inway,outway,stoich,0.5)
-
-inway = ['inserter', 'transport_belt']
-outway = ['logistic_science_pack']
-stoich = {'inserter':1, 'transport_belt':1, 'logistic_science_pack':1}
-cooking(inway,outway,stoich,8.75)
-
-
 
 class Node():
     def __init__(self, recipe, parent):
@@ -74,11 +27,15 @@ class Node():
 
 cookbook_names = list(cookbook.keys())
 
+
+
+
+
 ############
 ### INIT ###
 ############
 
-bottle = ('logistic_science_pack', 10)
+bottle = ('utility science pack', 10)
 
 objs = []
 objs.append(Node(cookbook[bottle[0]], None))
